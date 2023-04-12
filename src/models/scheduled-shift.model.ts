@@ -36,9 +36,32 @@ export class ScheduledShift {
         });
     }
 
+    static async findWorkerScheduleForDay(workerId: string, day: Date): Promise<ScheduledShift | null> {
+        try {
+            return db.oneOrNone(`SELECT shift.id as "shift_id", shift.day, shift.shift_number, worker.id as "worker_id", worker.name, worker.surname
+                                FROM shift
+                                INNER JOIN scheduled_shift ON shift.id = scheduled_shift.shift_id
+                                INNER JOIN worker on scheduled_shift.worker_id = worker.id
+                                WHERE shift.day = $1
+                                AND worker.id = $2`, [day, workerId])
+                .then((row) => {
+                    if (row) {
+                        const schedule: ScheduledShift = new ScheduledShift(row.shift_id, workerId)
+                        return schedule;
+                    }
+                    else {
+                        return null;
+                    }
+                });
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+
     async insert() {
         try {
-            const query = `INSERT INTO ${ScheduledShift._tableName} (shift_id, worker_id) VALUES($1, $2) RETURNING id`;
+            const query = `INSERT INTO ${ScheduledShift._tableName} (shift_id, worker_id) VALUES($1, $2) RETURNING shift_id`;
             const row = await db.one(query, [this.shift_id, this.worker_id]);
             this.id = row.id;
         }

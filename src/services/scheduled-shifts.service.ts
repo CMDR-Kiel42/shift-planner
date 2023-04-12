@@ -2,7 +2,8 @@ import { db } from "../db";
 import { ScheduledShift } from "../models/scheduled-shift.model";
 import { Shift } from "../models/shift.model";
 import { Worker } from "../models/worker.model";
-import { IWorkersToShift } from "../types/scheduled-shift.types";
+import { IScheduleInput, IWorkersToShift } from "../types/scheduled-shift.types";
+import { SHIFT_NUMBER } from "../types/shift.types";
 
 
 // TODO: paginate by week/month
@@ -27,4 +28,20 @@ export async function getFullSchedule(): Promise<IWorkersToShift[]> {
 
         return Array.from(allShifts.values());
     });
+}
+
+
+export async function scheduleShiftForWorker(scheduleInput: IScheduleInput) {
+    const scheduleForDay = await ScheduledShift.findWorkerScheduleForDay(scheduleInput.workerId, scheduleInput.day);
+
+    if (scheduleForDay) {
+        throw new Error("Cannot schedule more than one shift per day");
+    }
+
+    const shift = await Shift.findOrCreate(scheduleInput.day, scheduleInput.shiftNumber);
+    if (shift.id) {
+        console.log(`shift found: ${shift.id} ${shift.day} ${shift.shiftNumber}`);
+        const scheduledShift = new ScheduledShift(shift.id, scheduleInput.workerId);
+        await scheduledShift.insert();
+    }
 }
