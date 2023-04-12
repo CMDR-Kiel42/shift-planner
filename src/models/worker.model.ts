@@ -55,6 +55,6 @@ export class Worker {
     }
 
     static fromRow(row: any): Worker {
-        return new Worker(row.id, row.name, row.surname);
+        return new Worker(row.name, row.surname, row.id);
     }
 }

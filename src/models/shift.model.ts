@@ -5,12 +5,12 @@ import { Worker } from "./worker.model";
 
 export class Shift {
     static readonly _tableName = 'shift';
-    id?: number;
+    id?: string;
     day: Date;
     shiftNumber: SHIFT_NUMBER;
     assignedWorkers?: Worker[];
 
-    constructor(day: Date, shiftNumber: SHIFT_NUMBER, id?: number) {
+    constructor(day: Date, shiftNumber: SHIFT_NUMBER, id?: string) {
         this.id = id;
         this.day = day;
         this.shiftNumber = shiftNumber;
@@ -42,6 +42,20 @@ export class Shift {
         });
     }
 
+    static async findOrCreate(day: Date, shiftNumber: SHIFT_NUMBER): Promise<Shift> {
+        return db.oneOrNone(`SELECT * FROM ${Shift._tableName} WHERE day = $1 AND shift_number = $2`, [day, shiftNumber])
+        .then(async (row) => {
+            if (!row) {
+                let shift = new Shift(day, shiftNumber);
+                await shift.insert();
+                return shift;
+            }
+            else {
+                return this.fromRow(row);
+            }
+        });
+    }
+
     async insert() {
         try {
             const row = await db.one('INSERT INTO shift(day, shift_number) VALUES($1, $2) RETURNING id', [this.day, this.shiftNumber]);
@@ -62,7 +76,7 @@ export class Shift {
     }
 
     static fromRow(row: any): Shift {
-        return new Shift(row.id, row.day, row.shift_number);
+        return new Shift(row.day, row.shift_number, row.id);
     }
 
     static fromJoinedRow() {}
