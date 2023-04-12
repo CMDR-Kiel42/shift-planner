@@ -24,7 +24,11 @@ shiftRouter.get("/:shift_id", async (req: Request, res: Response) => {
 
 shiftRouter.post("/", async (req: Request, res: Response) => {
     try {
-        const shiftInput: IShiftInput = req.body;
+        const shiftInput: IShiftInput = {
+            day: new Date(req.body.day),
+            shiftNumber: req.body.shiftNumber
+        };
+        
         await shiftService.postShift(shiftInput);
         res.sendStatus(200);
     } catch (error) {

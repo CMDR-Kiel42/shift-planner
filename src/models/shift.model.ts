@@ -47,6 +47,7 @@ export class Shift {
         }
         catch(error) {
             console.error(`Failed to insert shift in db: ${error}`);
+            throw error;
         }
     }
 
