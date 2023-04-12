@@ -1,12 +1,14 @@
 import { db } from "../db";
 import { SHIFT_NUMBER } from "../types/shift.types";
 import * as dbHelper from "../helpers/db.helpers";
+import { Worker } from "./worker.model";
 
 export class Shift {
     static readonly _tableName = 'shift';
     id?: number;
     day: Date;
     shiftNumber: SHIFT_NUMBER;
+    assignedWorkers?: Worker[];
 
     constructor(day: Date, shiftNumber: SHIFT_NUMBER, id?: number) {
         this.id = id;
@@ -62,4 +64,6 @@ export class Shift {
     static fromRow(row: any): Shift {
         return new Shift(row.id, row.day, row.shift_number);
     }
+
+    static fromJoinedRow() {}
 }
