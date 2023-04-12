@@ -6,7 +6,7 @@ const scheduleRouter = express.Router();
 
 scheduleRouter.get("/", async (req: Request, res: Response) => {
     try {
-        ScheduledShift.findAll()
+        scheduleService.getFullSchedule()
         .then((scheduledShifts) => {
             res.json(scheduledShifts);
         });
