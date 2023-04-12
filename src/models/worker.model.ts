@@ -1,6 +1,8 @@
 import { db } from "../db";
+import * as dbHelper from "../helpers/db.helpers";
 
 export class Worker {
+    static readonly _tableName = 'worker';
     id?: string;
     name: string;
     surname: string;
@@ -12,10 +14,10 @@ export class Worker {
     }
 
     static async findAll(): Promise<Array<Worker>> {
-        return db.any("SELECT * FROM worker;")
+        return dbHelper.findAll(this._tableName)
         .then((rows) => {
             const allWorkers: Array<Worker> = new Array();
-            rows.forEach((row) => {
+            rows.forEach((row: any) => {
                 allWorkers.push(Worker.fromRow(row));
             });
             return allWorkers;
@@ -23,7 +25,7 @@ export class Worker {
     }
 
     static async findById(id: string): Promise<Worker> {
-        return db.oneOrNone("SELECT * FROM worker WHERE id = $1", id)
+        return dbHelper.findById(this._tableName, id)
         .then((row) => {
             if (!row) {
                 throw new Error(`Worker with id ${id} not found`);
@@ -31,7 +33,7 @@ export class Worker {
             else {
                 return Worker.fromRow(row);
             }
-        })
+        });
     }
 
     async insert() {
