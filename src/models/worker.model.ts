@@ -1,11 +1,11 @@
 import { db } from "../db";
 
 export class Worker {
-    id: string;
+    id?: string;
     name: string;
     surname: string;
 
-    constructor(id: string, name: string, surname: string) {
+    constructor(name: string, surname: string, id?: string) {
         this.id = id;
         this.name = name;
         this.surname = surname;
