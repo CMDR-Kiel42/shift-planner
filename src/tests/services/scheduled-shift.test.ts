@@ -17,19 +17,20 @@ beforeAll(() => {
     shiftFixtures.initialShifts.forEach(async (shift) => {
         await db.none(`INSERT INTO ${Shift._tableName}(day, shift_number) VALUES ($1, $2)`, [shift.day, shift.shiftNumber]);
     });
-})
+});
 
 describe ("Test schedule services", () => {
     afterEach(async () => {
         await db.none(`DELETE FROM ${ScheduledShift._tableName}`);
     });
 
-    it.skip("should schedule shift for a day", async () => {
-        const worker = new Worker("Tess", "Ting");
-        await worker.insert();
+    it
+    ("should schedule shift for a day", async () => {
+        const allWorkers = await Worker.findAll();
+        const worker = allWorkers[0];
 
-        const shift = new Shift(new Date(), SHIFT_NUMBER.FIRST);
-        await shift.insert();
+        const allShifts = await Shift.findAll();
+        const shift = allShifts[0];
 
         const scheduleInput: IScheduleInput = {
             day: shift.day,
@@ -43,11 +44,11 @@ describe ("Test schedule services", () => {
     });
 
     it("should prevent you from scheduling two shifts in a day", async () => {
-        const worker = new Worker("Tess", "Ting");
-        await worker.insert();
+        const allWorkers = await Worker.findAll();
+        const worker = allWorkers[0];
 
-        const shift = new Shift(new Date(), SHIFT_NUMBER.FIRST);
-        await shift.insert();
+        const allShifts = await Shift.findAll();
+        const shift = allShifts[0];
 
         const validScheduleInput: IScheduleInput = {
             day: shift.day,
