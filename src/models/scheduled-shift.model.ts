@@ -62,6 +62,8 @@ export class ScheduledShift {
     async insert() {
         try {
             const query = `INSERT INTO ${ScheduledShift._tableName} (shift_id, worker_id) VALUES($1, $2) RETURNING shift_id`;
+            console.log(query);
+            console.log(`inserting shift id: ${this.shift_id}; worker_id: ${this.worker_id}`)
             const row = await db.one(query, [this.shift_id, this.worker_id]);
             this.id = row.id;
         }

@@ -1,9 +1,9 @@
-import { db } from "../src/db";
-import { ScheduledShift } from "../src/models/scheduled-shift.model";
-import { Shift } from "../src/models/shift.model";
-import { Worker } from "../src/models/worker.model";
+import { db } from "../db";
+import { ScheduledShift } from "../models/scheduled-shift.model";
+import { Shift } from "../models/shift.model";
+import { Worker } from "../models/worker.model";
 
-jest.mock("../src/db")
+jest.mock("../db")
 
 beforeAll(async () => {
   await db.none(`CREATE TYPE public.shiftnumber AS ENUM (
@@ -39,7 +39,7 @@ beforeAll(async () => {
 });
       
 // close connection
-afterAll(async () => {
-    db.$pool.end();
-});
+// afterAll(async () => {
+//     db.$pool.end();
+// });
       
