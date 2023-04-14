@@ -9,7 +9,7 @@ beforeAll(() => {
     });
 })
 
-describe ("Test worker insert", () => {
+describe ("Test worker model", () => {
     it("should return full list of workers", async () => {
         const workerList = await Worker.findAll();
         expect(workerList).toHaveLength(3);
@@ -32,5 +32,5 @@ describe ("Test worker insert", () => {
         expect(worker.id).toEqual(row.id);
         expect(worker.name).toEqual(row.name);
         expect(worker.surname).toEqual(row.surname);
-    })
+    });
 });
