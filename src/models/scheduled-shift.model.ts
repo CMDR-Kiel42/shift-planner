@@ -3,12 +3,10 @@ import * as dbHelper from "../helpers/db.helpers";
 
 export class ScheduledShift {
     static readonly _tableName = "scheduled_shift";
-    id?: string;
     shift_id: string;
     worker_id: string;
 
-    constructor(shift_id: string, worker_id: string, id?: string) {
-        this.id = id;
+    constructor(shift_id: string, worker_id: string) {
         this.shift_id = shift_id;
         this.worker_id = worker_id;
     }
@@ -61,11 +59,8 @@ export class ScheduledShift {
 
     async insert() {
         try {
-            const query = `INSERT INTO ${ScheduledShift._tableName} (shift_id, worker_id) VALUES($1, $2) RETURNING shift_id`;
-            console.log(query);
-            console.log(`inserting shift id: ${this.shift_id}; worker_id: ${this.worker_id}`)
-            const row = await db.one(query, [this.shift_id, this.worker_id]);
-            this.id = row.id;
+            const query = `INSERT INTO ${ScheduledShift._tableName} (shift_id, worker_id) VALUES($1, $2)`;
+            await db.none(query, [this.shift_id, this.worker_id]);
         }
         catch(error) {
             console.error(`Failed to insert schedule in db: ${error}`);
@@ -75,18 +70,18 @@ export class ScheduledShift {
 
     async delete() {
         try {
-            await db.none(`DELETE FROM ${ScheduledShift._tableName} WHERE id = $1`, this.id);
+            await db.none(`DELETE FROM ${ScheduledShift._tableName} WHERE shift_id = $1 AND worker_id = 2`, [this.shift_id, this.worker_id]);
         } catch (error) {
-            console.error(`Failed to delete schedule ${this.id} in db: ${error}`);
+            console.error(`Failed to delete schedule ${this.shift_id} + ${this.worker_id} in db: ${error}`);
             throw error;
         }
     }
 
     async update() {
         try {
-            await db.none(`UPDATE ${ScheduledShift._tableName} SET shift_id = $1, worker_id = $2 WHERE id = $3`, [this.shift_id, this.worker_id, this.id]);
+            await db.none(`UPDATE ${ScheduledShift._tableName} SET shift_id = $1, worker_id = $2 WHERE shift_id = $3 AND worker_id = $4`, [this.shift_id, this.worker_id, this.shift_id, this.worker_id]);
         } catch (error) {
-            console.error(`Failed to update schedule ${this.id} in db: ${error}`);
+            console.error(`Failed to update schedule ${this.shift_id} + ${this.worker_id} in db: ${error}`);
             throw error;
         }
     }

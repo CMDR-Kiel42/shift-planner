@@ -31,7 +31,7 @@ export async function getFullSchedule(): Promise<IWorkersToShift[]> {
 }
 
 
-export async function scheduleShiftForWorker(scheduleInput: IScheduleInput) {
+export async function scheduleShiftForWorker(scheduleInput: IScheduleInput): Promise<ScheduledShift> {
     const scheduleForDay = await ScheduledShift.findWorkerScheduleForDay(scheduleInput.workerId, scheduleInput.day);
 
     if (scheduleForDay) {
@@ -39,9 +39,11 @@ export async function scheduleShiftForWorker(scheduleInput: IScheduleInput) {
     }
 
     const shift = await Shift.findOrCreate(scheduleInput.day, scheduleInput.shiftNumber);
-    if (shift.id) {
-        console.log(`shift found: ${shift.id} ${shift.day} ${shift.shiftNumber}`);
-        const scheduledShift = new ScheduledShift(shift.id, scheduleInput.workerId);
-        await scheduledShift.insert();
+    if (!shift.id) {
+        throw new Error("Could not create or find shift");
     }
+    
+    const scheduledShift = new ScheduledShift(shift.id, scheduleInput.workerId);
+    await scheduledShift.insert();
+    return scheduledShift;
 }
